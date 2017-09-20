@@ -1,0 +1,18 @@
+#lock {
+  width:15%;
+  margin: auto;
+  display:block;
+}
+.button {
+  background-color: red;
+}
+#signcss{
+  border: 1px solid #95989A;
+  background-size: 25px;
+  width: 20%;
+}
+#textCss{
+  width: 60%;
+  display: inline-block;
+  padding-left: 20px;
+}

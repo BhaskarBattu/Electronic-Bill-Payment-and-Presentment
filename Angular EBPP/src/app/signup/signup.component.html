@@ -1,0 +1,18 @@
+
+  <a routerLink="/login" id="goback">Go back</a>
+
+
+  <img src="./assets/join.jpg" id="lock" alt="image"/>
+  <h3>Join now</h3>
+  <span class="error" *ngIf="error" [@fallIn]='state'>{{ error }}</span>
+  <div style="text-align: center;">
+  <form #formData='ngForm' (ngSubmit)="onSubmit(formData)">
+
+    <input class="input" type="text" placeholder="Email address.." (ngModel)="email" id="textCss" name="email" required>
+    <input class="input" type="text" placeholder="Full Name" (ngModel)="name" id="textCss" name="name" required>
+    <input type="password" placeholder="Password" id="textCss" (ngModel)="password" name="password" required>
+    <input type="password" placeholder="retype-Password" id="textCss"(ngModel)="password" name="repeatpassword"  required>
+  <br>
+    <button type="submit" [disabled]="!formData.valid" class="button" id="signcss">Create my account</button>
+  </form>
+  </div>

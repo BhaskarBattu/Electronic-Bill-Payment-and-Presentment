@@ -1,0 +1,85 @@
+#lock {
+  width:7%;
+  margin: auto;
+  display:block;
+}
+.divider{
+  position: relative;
+  border-bottom: 1px dashed rgba(51,51,51,.17);
+  padding-top: 40px;
+}
+.or{
+  box-sizing: inherit;
+  background-color: #F2F2F2;
+  border-radius: 50%;
+  color: #666;
+  font-size: 12px;
+  position: absolute;
+  top: 25px;
+  width: 30px;
+  height: 30px;
+  padding-top: 7px;
+  padding-left: 4px;
+  left: 50%;
+  transform: translateX(-50%);
+  border: 1px solid #ccc;
+}
+.signin-form{
+  padding-top: 50px;
+  box-sizing: inherit;
+  text-align: center;
+}
+.button {
+  background-color: #4CAF50;
+  border: none;
+  color: white;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  font-size: 16px;
+  margin: 4px 2px;
+  cursor: pointer;
+  padding-left: 20px;
+}
+.textCss {
+  display: inline-block;
+}
+
+#google, #signcss {
+  border: 1px solid #95989A;
+  background-size: 25px;
+  width: 20%;
+}
+
+#email {
+
+  background-size: 25px;
+}
+
+@media (max-width: 600px) {
+  #page {
+    padding:1em;
+  }
+  #toolbar {
+    width:90%;
+    margin-left: -45%;
+  }
+  #fb {
+    background:#3B5998;
+  }
+
+  #google {
+    background: #fff;
+  }
+
+  #email {
+    background: #ECECEC;
+  }
+}
+
+.title{
+
+  font-size: 20px;
+  color:#1976d2;
+  font-family: Roboto,Helvetica Neue Light,Helvetica Neue,Helvetica,Arial,Lucida Grande,sans-serif;
+}

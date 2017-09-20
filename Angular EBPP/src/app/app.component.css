@@ -1,0 +1,64 @@
+.mat-toolbar.mat-primary {
+  background: #1976d2;
+  color: #fff;
+  top: 0;
+  right: 0;
+  left: 0;
+  z-index: 10;
+  padding: 0 16px 0 0;
+  box-shadow: 0 2px 5px 0 rgba(0,0,0,.3);
+  position: static;
+}
+.mat-toolbar {
+  min-height: 64px;
+  position: static;
+}
+.mat-toolbar {
+  display: flex;
+  box-sizing: border-box;
+  width: 100%;
+  padding: 0 16px;
+  flex-direction: column;
+  position: static;
+}
+a.nav-link {
+  margin: 0;
+  padding: 24px 16px;
+  cursor: pointer;
+}
+a {
+  font-size: 14px;
+  color: #fff;
+  font-family: Roboto,Helvetica Neue Light,Helvetica Neue,Helvetica,Arial,Lucida Grande,sans-serif;
+  text-transform: uppercase;
+  /*padding: 21px 0;*/
+}
+
+#logUser{
+  padding-left: 350px;
+}
+#logAdmin{
+  padding-left: 250px;
+}
+
+ul{z-index:100;margin:0;padding:0;list-style-type:none}
+ul li{float:left;}
+/*ul li{display:block;color:#fff;font-size:12px;text-decoration:none;padding-left: 100px}*/
+a:hover{color: #E2E4E6}
+#firstone{padding-left: 100px}
+
+.title{
+  padding-left: 50px;
+  font-size: 43px;
+  font-family: Roboto,Helvetica Neue Light,Helvetica Neue,Helvetica,Arial,Lucida Grande,sans-serif;
+  position: static;
+}
+.tblcolor{
+  background-color: darkgrey;
+  width: 100%;
+  height: 100%;
+  border: none;
+  align-items: center;
+  border-collapse: collapse;
+  margin-bottom: 0px;
+}

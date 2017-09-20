@@ -1,0 +1,160 @@
+<p>
+
+</p>
+<div style="width: auto;padding-left: 40px">
+  <div>
+    <label style="color: #3B5998;padding-left: 20px"><h4>Search for Customer name or email</h4></label>
+    <input type="search"  [(ngModel)]="searchBar" #searchBox (keyup)="searchOnBillsEmailOrName(searchBox.value)" id="inputText" placeholder="search customer name or email"/>
+
+    <button (click)="billsListToView()" id="buttonCust" class="button">View Bills Details</button>
+    <input type="file" name="file" id="file" class="inputfile" accept=".csv" (change)="uploadDatasource($event)"/>
+    <label for="file">Upload Bills File</label>
+
+    <label style="color: #3B5998;padding: 10px">(OR)</label>
+
+
+    <md-form-field>
+      <form (ngSubmit)="onSubmit(datePickerValue)" #datePickerValue="ngForm">
+
+        <input class="form-control" name="startDate" mdInput [mdDatepicker]="picker"
+               [(ngModel)]="startDate" style="width: 90px;height: 36px" placeholder="mm/dd/yyyy" required>
+      <md-datepicker-toggle mdSuffix [for]="picker" ></md-datepicker-toggle>
+      <md-datepicker #picker></md-datepicker>
+
+          to
+
+        <input class="form-control" name="endDate" mdInput [mdDatepicker]="endpicker"
+               [(ngModel)]="endDate" style="width: 90px;height: 36px" placeholder="mm/dd/yyyy" required>
+      <md-datepicker-toggle mdSuffix [for]="endpicker"></md-datepicker-toggle>
+        <button id="buttonAllign" class="button" type="submit" [disabled]="!datePickerValue.form.valid">Submit</button>
+      </form>
+      <md-datepicker #endpicker></md-datepicker>
+    <!-- <form (ngSubmit)="onSubmit()" [formGroup]= "userForm" >
+        <input mdInput [mdDatepicker]="picker" style="width: 100px;height: 36px" placeholder="mm/dd/yyyy">
+        <md-datepicker-toggle mdSuffix [for]="picker" #refName class="form-control" formControlName="picker" ></md-datepicker-toggle>
+        <md-datepicker #picker></md-datepicker>
+        to
+        <input mdInput [mdDatepicker]="endpicker"  style="width: 90px;height: 36px" placeholder="mm/dd/yyyy">
+        <md-datepicker-toggle mdSuffix [for]="endpicker" #refName class="form-control" formControlName="edate"></md-datepicker-toggle>
+        <md-datepicker #endpicker></md-datepicker>
+        <div class="clearfix">
+          <button type="reset" class="cancelbtn">Reset</button>
+          <button type="submit">Sign In</button>
+        </div>
+      </form>-->
+    </md-form-field>
+
+    <!--<button id="buttonCust" class="button">View Bills Details</button>-->
+
+
+  </div>
+
+</div>
+
+
+<div *ngIf="this.isUploadedBills" style="padding-top: 40px">
+  <label style="color: #3B5998;padding-left: 20px"><h4>The Search Results are</h4></label>
+  <md-toolbar class="app-toolbar mat-toolbar mat-primary" color="primary" role="toolbar">
+    <ul role="navigation">
+      <li><a (click)="setSortingElement('name')">username</a></li>
+      <li><a (click)="setSortingElement('email')"  id="emials">email</a></li>
+    </ul>
+  </md-toolbar><br>
+  <div *ngFor="let item of searchBillsList |orderBy : orderElement" (click)="clickBillCustomer(item.email)">
+    <div id="bordesLi">
+      <p id="incname">{{item.name}}</p>
+      <p id="emailnameLi">{{item.email}}</p>
+    </div>
+    <br>
+  </div>
+</div>
+
+
+
+<br>
+<div *ngIf="this.isCustomerBills">
+
+  <md-toolbar class="app-toolbar mat-toolbar mat-primary" color="primary" role="toolbar">
+    <ul role="navigation">
+      <li><a>email</a></li>
+      <li><a id="month">month</a></li>
+      <li><a>billnumber</a></li>
+      <li><a>amount</a></li>
+      <li><a style="padding-left: 70px">Due Date</a></li>
+    </ul>
+  </md-toolbar><br>
+  <div *ngFor="let billDetail of customerBillsList">
+    <div id="bordes">
+      <p id="emailname">{{billDetail.email}}</p>
+      <p> {{billDetail.month}}</p>
+      <p> {{billDetail.billnumber}}</p>
+      <p> {{billDetail.amount}}</p>
+      <p> {{billDetail.duedate}}</p>
+    </div>
+    <br>
+  </div>
+</div>
+
+
+
+
+
+<br>
+<div *ngIf="this.onrefreshChange">
+<md-toolbar class="app-toolbar mat-toolbar mat-primary" color="primary" role="toolbar">
+  <ul role="navigation">
+    <li><a (click)="setSortingElement('name')">name</a></li>
+    <li><a (click)="setSortingElement('email')" id="emials">email</a></li>
+    <li><a (click)="setSortingElement('month')" id="month">month</a></li>
+    <li><a (click)="setSortingElement('billnumber')">billnumber</a></li>
+    <li><a (click)="setSortingElement('amount')">amount</a></li>
+    <li><a (click)="setSortingElement('duedate')" style="padding-left: 70px">Due Date</a></li>
+  </ul>
+</md-toolbar><br>
+<div *ngFor="let billDetail of retriveBillsList |orderBy : orderElement">
+ <div id="bordes"><p id="incname">{{billDetail.name}}</p>
+       <p id="emailname">{{billDetail.email}}</p>
+       <p> {{billDetail.month}}</p>
+       <p> {{billDetail.billnumber}}</p>
+       <p> {{billDetail.amount}}</p>
+       <p> {{billDetail.duedate}}</p>
+ </div>
+  <br>
+</div>
+
+</div>
+
+
+
+<!--
+<a>
+  <p>{{billDetail.name}}</p>
+  <p> {{billDetail.email}}</p>
+  <p> {{billDetail.month}}</p>
+  <p> {{billDetail.billnumber}}</p>
+  <p> {{billDetail.amount}}</p>
+  <p> {{billDetail.duedate}}</p>
+</a>
+<ul>
+  <li>{{billDetail.name}}</li>
+  <li> {{billDetail.email}}</li>
+  <li> {{billDetail.month}}</li>
+  <li> {{billDetail.billnumber}}</li>
+  <li> {{billDetail.amount}}</li>
+  <li> {{billDetail.duedate}}</li>
+</ul><br>
+
+ <form (ngSubmit)="onSubmit()" [formGroup]= "userForm" >
+      <input mdInput [mdDatepicker]="picker" #refName class="form-control" formControlName="picker" style="width: 100px;height: 36px" placeholder="mm/dd/yyyy">
+      <md-datepicker-toggle mdSuffix [for]="picker"></md-datepicker-toggle>
+      <md-datepicker #picker></md-datepicker>
+          to
+      <input mdInput [mdDatepicker]="endpicker" #refName class="form-control" formControlName="edate" style="width: 90px;height: 36px" placeholder="mm/dd/yyyy">
+      <md-datepicker-toggle mdSuffix [for]="endpicker"></md-datepicker-toggle>
+      <md-datepicker #endpicker></md-datepicker>
+        <div class="clearfix">
+          <button type="reset" class="cancelbtn">Reset</button>
+          <button type="submit">Sign In</button>
+        </div>
+      </form>
+-->

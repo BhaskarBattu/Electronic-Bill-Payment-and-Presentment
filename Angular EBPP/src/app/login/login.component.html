@@ -1,0 +1,30 @@
+<!--<div class="form-container">
+
+</div>-->
+<img src="./assets/login.jpg" id="lock" alt="image"/>
+<div style="text-align: center">
+<span class="error" *ngIf="error">{{ error }}</span>
+
+<button (click)="loginGoogle()" id="google" class="button">Login With Google</button>
+
+</div>
+<div class="divider">
+  <span class="or">OR</span>
+</div>
+<span class="error" *ngIf="error">{{ error }}</span>
+<form class="signin-form" id="iUserNameParent">
+  <input type="text" pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,4}$" class="email-input" placeholder="Enter your Email ID" class="textCss" id="signcss" required="" minLength="1">
+  <div id="dSignInErrorEmail" class="form-messages _success" style="display: none;">
+    <p class="__text"></p>
+  </div>
+
+  <input type="password" minLength="1" class="password-input" placeholder="Enter your password" class="textCss" id="signcss" autocomplete="off">
+  <div id="dSignInErrorPassword" class="form-messages _success" style="display: none;">
+    <p class="__text"></p>
+  </div>
+  <button (click)="loginGoogle()" class="button" id="signcss">SIGN IN</button>
+
+</form>
+
+<a routerLink="/signup" routerLinkActive="active" class="alc">No account? <strong>Create one here</strong></a>
+

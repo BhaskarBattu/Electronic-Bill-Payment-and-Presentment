@@ -1,0 +1,134 @@
+
+<div style="width: auto;padding-left: 40px">
+  <div>
+    <button id="buttonCust" class="button" (click)="summary()">View Summary</button>
+    <button id="buttonCust" class="button" (click)="viewbillslist()">View Bills List</button>
+  </div>
+</div>
+<br>
+<div *ngIf="viewSummary && !this.isPay">
+  <span>Your Summary</span>
+  <div *ngIf="displayPayResponse">
+    <div id="sumary">
+      <div>Your Bill is Successfully paid:</div>
+      <div>Mail:{{this.isPayMail}}</div>
+      <div>BillNumber:{{this.isPaybillNo}}</div>
+      <div>Amount: {{this.isPayAmount}}</div>
+      <div><img src="./assets/success.jpg"></div>
+    </div>
+  </div>
+  <md-toolbar class="app-toolbar mat-toolbar mat-primary" color="primary" role="toolbar">
+    <ul role="navigation">
+      <li><a style="padding-left: 90px">month</a></li>
+      <li><a>billnumber</a></li>
+      <li><a>amount</a></li>
+      <li style="padding-left: 45px"><a>Payment Type</a></li>
+      <li><a>Payment Option</a></li>
+      <li><a>Payment Date And Time</a></li>
+    </ul>
+  </md-toolbar><br>
+
+  <div *ngFor="let billDetail of customerPreviousBills">
+    <div id="bordes">
+      <p> {{billDetail.month}}</p>
+      <p> {{billDetail.billno}}</p>
+      <p> {{billDetail.amount}}</p>
+      <p> {{billDetail.paymentType}}</p>
+      <p>{{billDetail.paymentOption}}</p>
+      <p style="width: 230px;padding-left: 37px">{{billDetail.payDate}}</p>
+    </div>
+    <br>
+  </div>
+</div>
+
+<div *ngIf="!viewSummary && !this.isPay">
+  <md-toolbar class="app-toolbar mat-toolbar mat-primary" color="primary" role="toolbar">
+    <ul role="navigation">
+      <li><a  id="emials">email</a></li>
+      <li><a id="month">month</a></li>
+      <li><a>billnumber</a></li>
+      <li><a>amount</a></li>
+      <li><a style="padding-left: 70px">Due Date</a></li>
+      <li><a>Payment</a></li>
+    </ul>
+  </md-toolbar><br>
+
+  <div *ngFor="let billDetail of customerBillsList">
+    <div id="bordes">
+      <p id="emailname">{{billDetail.email}}</p>
+      <p> {{billDetail.month}}</p>
+      <p> {{billDetail.billnumber}}</p>
+      <p> {{billDetail.amount}}</p>
+      <p> {{billDetail.duedate}}</p>
+      <button id="buttonpay" class="buttonpay"
+              (click)="payBill(billDetail.email, billDetail.month, billDetail.billnumber,billDetail.amount,billDetail.duedate)">pay</button>
+    </div>
+    <br>
+  </div>
+</div>
+
+
+<div *ngIf="this.isPay">
+  <div id="sumary">
+      <div>Your Bill Summary:</div>
+      <div>Mail:{{this.isPayMail}}</div>
+      <div>BillNumber:{{this.isPaybillNo}}</div>
+      <div>Amount: {{this.isPayAmount}}</div>
+  </div>
+  <div>
+    <span style="padding-left: 40px;color: #3B5998">Pay Bill Through payment options</span>
+    <div id="radiostyle">
+      <label><input type="radio" name="payment" value="creditordebit"  [(ngModel)]="paymenttype" > Credit/Debit Card</label>
+      <label><input type="radio" name="payment" value="netbanking" ngModel style="margin-left: 30px" [(ngModel)]="paymenttype"> Net banking</label>
+      <label><input type="radio" name="payment" value="wallet" ngModel style="margin-left: 30px" [(ngModel)]="paymenttype"> Other Wallets</label>
+    </div><br><br>
+    <div *ngIf="paymenttype=='creditordebit'" id="sumaryCard">
+      <span style="padding-left: 40px;color: #3B5998">Pay Using Card</span>
+      <form (ngSubmit)="onSubmitThroughCard(paymentDetailsThroughCard)" #paymentDetailsThroughCard="ngForm">
+        <input type="hidden" class="form-control" [(ngModel)]='this.isPayMail' name="paymail" >
+        <input type="hidden" class="form-control" [(ngModel)]='this.isPayMonth' name="paymonth" >
+        <input type="hidden" class="form-control" [(ngModel)]='this.isPaybillNo' name="paybillNo" >
+        <input type="hidden" class="form-control" [(ngModel)]='this.isPayAmount' name="payamount" >
+        <input type="text" class="form-control" [(ngModel)]="creditordebitnumber" name="creditordebitnumber"  maxlength="16" minlength="16" placeholder="ENTER YOUR CARD NUMBER" required>
+        <input type="text" class="form-control" [(ngModel)]="nameonthecard" name="nameonthecard" placeholder="NAME ON THE CARD" required>
+        <input type="text" class="form-control" [(ngModel)]="expmonth" name="expmonth" placeholder="MM" maxlength="2"  id="txtExpMonth"  required>
+        <input type="text"  class="form-control"  [(ngModel)]="expyear" name="expyear" placeholder="YY" maxlength="2" id="txtExpYear"  required>
+        <input type="password" class="form-control"  [(ngModel)]="cvv"  name="cvv" placeholder="CVV" maxlength="3" id="txtCVV" required>
+        <button id="buttonAllign"  class="button" type="submit" [disabled]="!paymentDetailsThroughCard.form.valid">Pay {{this.isPayAmount}}</button>
+      </form>
+    </div>
+    <div *ngIf="paymenttype=='netbanking'" id="bank">
+      <div style="padding-left: 120px;padding-top: 20px">
+        <span style="padding-left: 40px;color: #3B5998">Pay Using Net Banking</span><br><br>
+
+        <form (ngSubmit)="onSubmitThroughBank(paymentDetailsThroughBank)" #paymentDetailsThroughBank="ngForm">
+          <input type="hidden" class="form-control" [(ngModel)]='this.isPayMail' name="paymail" >
+          <input type="hidden" class="form-control" [(ngModel)]='this.isPayMonth' name="paymonth" >
+          <input type="hidden" class="form-control" [(ngModel)]='this.isPaybillNo' name="paybillNo" >
+          <input type="hidden" class="form-control" [(ngModel)]='this.isPayAmount' name="payamount" >
+          <label id="l1"><input type="radio" name="bank" value="sbi" class="form-control" [(ngModel)]="bank" required> <img src="./assets/sbi.jpg" width="50px"  alt="sbi"></label>
+          <label id="l2"><input type="radio" name="bank" value="axis" class="form-control" [(ngModel)]="bank" style="margin-left: 20px"  required> <img src="./assets/axis.jpg" width="60px" alt="axis"></label>
+          <label id="l3"><input type="radio" name="bank" value="citi" class="form-control"  [(ngModel)]="bank"  style="margin-left: 20px" required><img src="./assets/citi.jpg" width="70px" alt="citi"></label><br>
+          <button id="buttonAllignNetbank"  class="button" type="submit" [disabled]="!paymentDetailsThroughBank.form.valid">Pay {{this.isPayAmount}}</button>
+        </form>
+
+      </div>
+    </div>
+      <div *ngIf="paymenttype=='wallet'" id="wallet">
+      <div style="padding-left: 120px;padding-top: 20px">
+        <span style="padding-left: 40px;color: #3B5998;">Pay Using by Wallets </span><br><br>
+        <form (ngSubmit)="onSubmitThroughWallet(paymentDetailsThroughWallet)" #paymentDetailsThroughWallet="ngForm">
+          <input type="hidden" class="form-control" [(ngModel)]='this.isPayMail' name="paymail" >
+          <input type="hidden" class="form-control" [(ngModel)]='this.isPayMonth' name="paymonth" >
+          <input type="hidden" class="form-control" [(ngModel)]='this.isPaybillNo' name="paybillNo" >
+          <input type="hidden" class="form-control" [(ngModel)]='this.isPayAmount' name="payamount" >
+          <label id="l1"> <input type="radio" name="wallet" value="mobikwik" class="form-control" [(ngModel)]="wallet" required> <img src="./assets/mobikwik.jpg" width="100px"  alt="mobikwik"></label>
+          <label id="l2"><input type="radio" name="wallet" value="freecharge" class="form-control" [(ngModel)]="wallet" style="margin-left: 20px" required> <img src="./assets/freecharge.jpg" width="100px" alt="freecharge"></label>
+          <label id="l3"><input type="radio" name="wallet" value="paytm" class="form-control"  [(ngModel)]="wallet" style="margin-left: 20px" required><img src="./assets/paytm.jpg" width="100px" alt="paytm"></label><br>
+          <button id="buttonAllignwallet"  class="button" type="submit" [disabled]="!paymentDetailsThroughWallet.form.valid">Pay {{this.isPayAmount}}</button>
+        </form>
+      </div>
+    </div>
+  </div>
+
+</div>

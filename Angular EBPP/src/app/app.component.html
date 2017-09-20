@@ -1,0 +1,28 @@
+<md-toolbar class="app-toolbar mat-toolbar mat-primary" color="primary" role="toolbar">
+
+  <ul role="navigation">
+    <li><p class="title" title="EBPP">Electronic Bill Payment and
+      Presentment </p></li>
+  </ul>
+</md-toolbar>
+<md-toolbar class="app-toolbar mat-toolbar mat-primary" color="primary" role="toolbar">
+
+  <ul role="navigation">
+    <li><a  *ngIf="this.isUserLoggedIn" class="nav-link" id="firstone" routerLink="/home" routerLinkActive="active" title="Features">Home</a></li>
+    <li><a *ngIf="this.isloginer && this.isUserLoggedIn"class="nav-link"  routerLink="home/customermanagement" routerLinkActive="active">Customer Management</a></li>
+    <li><a *ngIf="this.isloginer && this.isUserLoggedIn" class="nav-link" routerLink="home/billsmanagement" routerLinkActive="active">Bills Management</a></li>
+    <li><a *ngIf="!this.isloginer && this.isUserLoggedIn" class="nav-link" routerLink="home/billsandpaymentmanagement" routerLinkActive="active">Bills And Payment Mangement</a></li>
+    <li><a  *ngIf="!this.isloginer && this.isUserLoggedIn " class="nav-link" id="logUser"> {{ this.name }}</a></li>
+    <li><a  *ngIf="this.isloginer && this.isUserLoggedIn" class="nav-link" id="logAdmin"> {{ this.name }}</a></li>
+    <li><a class="nav-link" *ngIf="this.isUserLoggedIn" (click)="logout()" routerLinkActive="active">Logout</a></li>
+  </ul>
+</md-toolbar>
+
+<table class="tblcolor" border="none">
+  <tr>
+    <td>
+     <router-outlet></router-outlet>
+    </td>
+  </tr>
+</table>
+

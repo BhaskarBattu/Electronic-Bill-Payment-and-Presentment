@@ -1,0 +1,113 @@
+<p>
+
+</p>
+<div style="width: auto;padding-left: 40px">
+  <h3>The line Numbers are: {{errorMsgInUpLoadcust}}</h3>
+  <div>
+    <label style="color: #3B5998;padding-left: 20px"><h4>Search for Customer or email</h4></label>
+      <input type="search"  [(ngModel)]="searchBar" #searchBox (keyup)="searchCustomers(searchBox.value)" id="inputText" placeholder="search customer name or email"/>
+    <button id="buttonCust" (click)="customersListToView()" class="button">View Customer List</button>
+   <!-- <input type="file" id="buttonCust" accept=".csv" class="button"/>Upload Customer File</input>-->
+    <input type="file" name="file" id="file" class="inputfile" enctype="multipart/form-data" accept=".csv" (change)="uploadDatasource($event)"/>
+    <label for="file">Upload Customer File</label>
+  </div>
+
+</div>
+
+<div *ngIf="this.isUploaded" style="padding-top: 40px">
+  <label style="color: #3B5998;padding-left: 20px"><h5>The Results are</h5></label>
+  <md-toolbar class="app-toolbar mat-toolbar mat-primary" color="primary" role="toolbar">
+    <ul role="navigation">
+      <li><a (click)="setSortingElement('username')">username</a></li>
+      <li><a (click)="setSortingElement('email')"id="emials">email</a></li>
+    </ul>
+  </md-toolbar><br>
+  <div *ngFor="let item of searchCustomersList | orderBy : orderElement" (click)="getCustomerDetails(item.email)">
+    <div id="bordes">
+      <p id="incname">{{item.username}}</p>
+      <p id="emailname">{{item.email}}</p>
+    </div>
+    <br>
+  </div>
+  <ul *ngIf="this.ispaginationForCustList">
+    <li>&lt;</li>
+    <li *ngFor="let num of paginationArray" (click)="loadCustomersList(num)">{{num}}</li>
+    <li> &gt;</li>
+  </ul>
+</div>
+
+<br>
+<div *ngIf="this.onrefreshChange">
+    <md-toolbar class="app-toolbar mat-toolbar mat-primary" color="primary" role="toolbar">
+      <ul role="navigation">
+        <li><a (click)="setSortingElement('username')">username</a></li>
+        <li><a (click)="setSortingElement('email')" id="emials">email</a></li>
+        <li><a (click)="setSortingElement('totalOutStanding')">Total out standing</a></li>
+        <li><a (click)="setSortingElement('duedate')" >duedte</a></li>
+      </ul>
+    </md-toolbar>
+<br>
+      <div *ngFor="let cust of customerslist | orderBy : orderElement" (click)="getCustomerDetails(cust.email)">
+        <div id="bordes">
+          <p id="incname">{{cust.username}}</p>
+          <p id="emailname">{{cust.email}}</p>
+          <p> {{cust.totalOutStanding}}</p>
+          <p> {{cust.duedate}}</p>
+        </div>
+        <br>
+      </div>
+     <ul *ngIf="this.ispaginationForCustBill">
+       <li>&lt;</li>
+       <li *ngFor="let num of paginationArrayForCustBill" (click)="loadCustomerBillsList(num)">{{num}}</li>
+       <li> &gt;</li>
+     </ul>
+</div>
+
+
+
+
+<div *ngIf="this.isCustomerBills">
+  <h3>Present Bills</h3>
+  <md-toolbar class="app-toolbar mat-toolbar mat-primary" color="primary" role="toolbar">
+    <ul role="navigation">
+      <li><a style="padding-left: 80px">email</a></li>
+      <li><a id="month">month</a></li>
+      <li><a>billnumber</a></li>
+      <li><a>amount</a></li>
+      <li><a style="padding-left: 70px">Due Date</a></li>
+    </ul>
+  </md-toolbar><br>
+  <div *ngFor="let billDetail of customerBillsList">
+    <div id="bordes">
+      <p id="emailname">{{billDetail.email}}</p>
+      <p> {{billDetail.month}}</p>
+      <p> {{billDetail.billnumber}}</p>
+      <p> {{billDetail.amount}}</p>
+      <p> {{billDetail.duedate}}</p>
+    </div>
+    <br>
+  </div>
+  <h3>Paid Bills</h3>
+  <md-toolbar class="app-toolbar mat-toolbar mat-primary" color="primary" role="toolbar">
+    <ul role="navigation">
+      <li><a>month</a></li>
+      <li><a>billnumber</a></li>
+      <li><a>amount</a></li>
+      <li style="padding-left: 45px"><a>Payment Type</a></li>
+      <li><a>Payment Option</a></li>
+      <li><a>Payment Date And Time</a></li>
+    </ul>
+  </md-toolbar><br>
+
+  <div *ngFor="let billDetail of customerPreviousBills">
+    <div id="bordes">
+      <p> {{billDetail.month}}</p>
+      <p> {{billDetail.billno}}</p>
+      <p> {{billDetail.amount}}</p>
+      <p> {{billDetail.paymentType}}</p>
+      <p>{{billDetail.paymentOption}}</p>
+      <p style="width: 200px;padding-left: 37px">{{billDetail.payDate}}</p>
+    </div>
+    <br>
+  </div>
+</div>
