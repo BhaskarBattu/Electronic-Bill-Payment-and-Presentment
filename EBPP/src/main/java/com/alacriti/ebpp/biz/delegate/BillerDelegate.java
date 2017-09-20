@@ -2,6 +2,7 @@ package com.alacriti.ebpp.biz.delegate;
 
 import java.sql.Connection;
 import java.util.ArrayList;
+import java.util.List;
 
 import org.apache.log4j.Logger;
 
@@ -134,19 +135,72 @@ public class BillerDelegate extends BaseDelegate {
 			}
 			
 		}
-
-	 public ArrayList<ViewCustomer> getCustomerInfo(ViewCustomer customer){
-		 log.debug("=========>> getCustomerInfo method in BillerDelegate class ::");
+	 
+	 public int getpaginationCountOfCustomerBillsInfo(){
+		 log.debug("=========>> getpaginationCountOfCustomerBillsInfo method in BillerDelegate class ::");
 		 BillerBO billerbo=null;
 			Connection connection=null;
 			boolean rollBack = false;
-			ArrayList<ViewCustomer> customersList = null;
+			int count=0;
 			
 			try{
 				connection = startDBTransaction();
 				setConnection(connection);
 				billerbo= new BillerBO(connection);
-				customersList = billerbo.getCustomerInfoBO(customer);
+				count = billerbo.getpaginationCountOfCustomerBillsInfoBO();
+			}catch(BOException e){
+				rollBack=true;
+				e.printStackTrace();
+				log.error("BOException in getpaginationCountOfCustomerBillsInfo : "+ e.getMessage(), e);
+			}catch(Exception e){
+				rollBack=true;
+				log.error("Exception in getpaginationCountOfCustomerBillsInfo : "+ e.getMessage(), e);
+			}finally{
+				endDBTransaction(connection, rollBack);
+			}
+			
+			return count;
+	 }
+	 
+	 public int getpaginationCountOfCustomersInfo(){
+		 log.debug("=========>> getpaginationCountOfCustomersInfo method in BillerDelegate class ::");
+		 BillerBO billerbo=null;
+			Connection connection=null;
+			boolean rollBack = false;
+			int count=0;
+			
+			try{
+				connection = startDBTransaction();
+				setConnection(connection);
+				billerbo= new BillerBO(connection);
+				count = billerbo.getpaginationCountOfCustomersInfoBO();
+			}catch(BOException e){
+				rollBack=true;
+				e.printStackTrace();
+				log.error("BOException in getpaginationCountOfCustomersInfo : "+ e.getMessage(), e);
+			}catch(Exception e){
+				rollBack=true;
+				log.error("Exception in getpaginationCountOfCustomersInfo : "+ e.getMessage(), e);
+			}finally{
+				endDBTransaction(connection, rollBack);
+			}
+			
+			return count;
+	 }
+	 
+	 public List<ViewCustomer> getCustomerInfo(ViewCustomer customer,int start,int end){
+		 log.debug("=========>> getCustomerInfo method in BillerDelegate class ::");
+		 BillerBO billerbo=null;
+			Connection connection=null;
+			boolean rollBack = false;
+			ArrayList<ViewCustomer> customersList = null;
+			List<ViewCustomer> resultList=null;
+			
+			try{
+				connection = startDBTransaction();
+				setConnection(connection);
+				billerbo= new BillerBO(connection);
+				resultList = billerbo.getCustomerInfoBO(customer,start,end);
 			}catch(BOException e){
 				rollBack=true;
 				e.printStackTrace();
@@ -158,21 +212,22 @@ public class BillerDelegate extends BaseDelegate {
 				endDBTransaction(connection, rollBack);
 			}
 			
-			return customersList;
+			return resultList;
 	 }
 
-	 public ArrayList<ViewCustomer> getCustomerInfoToView(ViewCustomer customer){
+	 public List<ViewCustomer> getCustomerInfoToView(ViewCustomer customer,int start,int end){
 		 log.debug("=========>> getCustomerInfoToView method in BillerDelegate class ::");
 		 BillerBO billerbo=null;
 			Connection connection=null;
 			boolean rollBack = false;
 			ArrayList<ViewCustomer> customersList = null;
+			List<ViewCustomer> resultList=null;
 			
 			try{
 				connection = startDBTransaction();
 				setConnection(connection);
 				billerbo= new BillerBO(connection);
-				customersList = billerbo.getCustomerInfoToViewBO(customer);
+				resultList = billerbo.getCustomerInfoToViewBO(customer,start,end);
 			}catch(BOException e){
 				rollBack=true;
 				e.printStackTrace();
@@ -184,7 +239,7 @@ public class BillerDelegate extends BaseDelegate {
 				endDBTransaction(connection, rollBack);
 			}
 			
-			return customersList;
+			return resultList;
 	 }
 	 
 	 public ArrayList<BillsDetailsVO> getBillsInfo(BillsDetailsVO bills){

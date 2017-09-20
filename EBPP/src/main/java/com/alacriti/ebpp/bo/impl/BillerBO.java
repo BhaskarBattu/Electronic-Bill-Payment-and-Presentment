@@ -2,6 +2,7 @@ package com.alacriti.ebpp.bo.impl;
 
 import java.sql.Connection;
 import java.util.ArrayList;
+import java.util.List;
 
 import org.apache.log4j.Logger;
 
@@ -33,6 +34,40 @@ public class BillerBO extends BaseBO{
 			log.error("Exception in addcustomer of CustomerBO " + e.getMessage(), e);
 			throw new BOException();
 		}
+	}
+	
+	public  int getpaginationCountOfCustomerBillsInfoBO() throws BOException{
+		log.debug("=========>> getpaginationCountOfCustomerBillsInfoBO method in CustomerBO class ::");
+		BillerDAO billerdao=null;
+		int count=0;
+		try{
+			billerdao=new BillerDAO(getConnection());
+			count=billerdao.getpaginationCountOfCustomerBillsInfoDAO();
+		}catch (DAOException e) {
+			log.error("DAOException in getpaginationCountOfCustomerBillsInfoBO of CustomerBO " + e.getMessage(), e);
+			throw new BOException("DAOException Occured");
+		} catch (Exception e) {
+			log.error("Exception in getpaginationCountOfCustomerBillsInfoBO of CustomerBO " + e.getMessage(), e);
+			throw new BOException();
+		}
+		return count;
+	}
+	
+	public  int getpaginationCountOfCustomersInfoBO() throws BOException{
+		log.debug("=========>> getpaginationCountOfCustomersInfoBO method in CustomerBO class ::");
+		BillerDAO billerdao=null;
+		int count=0;
+		try{
+			billerdao=new BillerDAO(getConnection());
+			count=billerdao.getpaginationCountOfCustomersInfoBODAO();
+		}catch (DAOException e) {
+			log.error("DAOException in getpaginationCountOfCustomersInfoBO of CustomerBO " + e.getMessage(), e);
+			throw new BOException("DAOException Occured");
+		} catch (Exception e) {
+			log.error("Exception in getpaginationCountOfCustomersInfoBO of CustomerBO " + e.getMessage(), e);
+			throw new BOException();
+		}
+		return count;
 	}
 	
 	public  void addBillsBO(BillsDetailsVO bill) throws BOException{
@@ -67,13 +102,20 @@ public class BillerBO extends BaseBO{
 		return listOfBills;
 	}
 
-	public  ArrayList<ViewCustomer> getCustomerInfoBO(ViewCustomer customer) throws BOException{
+	public  List<ViewCustomer> getCustomerInfoBO(ViewCustomer customer, int start, int end) throws BOException{
 		log.debug("=========>> getCustomerInfoBO method in BillerBO class ::");
 		BillerDAO billerdao=null;
 		ArrayList<ViewCustomer> customersList=null;
+		List<ViewCustomer> resultList=null;
 		try{
 			billerdao=new BillerDAO(getConnection());
 			customersList = billerdao.getCustomerInfoDAO(customer);
+			if(end>=customersList.size()){
+				resultList = customersList.subList(start, customersList.size());
+			} else {
+				resultList = customersList.subList(start, end);
+			}
+			
 		}catch (DAOException e) {
 			log.error("DAOException in getCustomerInfoBO of BillerBO " + e.getMessage(), e);
 			throw new BOException("DAOException Occured");
@@ -81,16 +123,24 @@ public class BillerBO extends BaseBO{
 			log.error("Exception in getCustomerInfoBO of BillerBO " + e.getMessage(), e);
 			throw new BOException();
 		}
-		return customersList;
+		return resultList;
 	}
 
-	public  ArrayList<ViewCustomer> getCustomerInfoToViewBO(ViewCustomer customer) throws BOException{
+	public  List<ViewCustomer> getCustomerInfoToViewBO(ViewCustomer customer, int start, int end) throws BOException{
 		log.debug("=========>> getCustomerInfoToViewDAO method in BillerBO class ::");
 		BillerDAO billerdao=null;
 		ArrayList<ViewCustomer> customersList=null;
+		List<ViewCustomer> resultList=null;		
+		
 		try{
 			billerdao=new BillerDAO(getConnection());
 			customersList = billerdao.getCustomerInfoToViewDAO(customer);
+			
+			if(end>=customersList.size()){
+				resultList = customersList.subList(start, customersList.size());
+			} else {
+				resultList = customersList.subList(start, end);
+			}
 		}catch (DAOException e) {
 			log.error("DAOException in getCustomerInfoToViewDAO of BillerBO " + e.getMessage(), e);
 			throw new BOException("DAOException Occured");
@@ -98,7 +148,7 @@ public class BillerBO extends BaseBO{
 			log.error("Exception in getCustomerInfoToViewDAO of BillerBO " + e.getMessage(), e);
 			throw new BOException();
 		}
-		return customersList;
+		return resultList;
 	}
 	
 	public  ArrayList<BillsDetailsVO> getBillsInfoBO(BillsDetailsVO bills) throws BOException{

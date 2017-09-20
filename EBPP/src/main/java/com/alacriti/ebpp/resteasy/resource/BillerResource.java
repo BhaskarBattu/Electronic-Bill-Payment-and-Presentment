@@ -1,6 +1,16 @@
 package com.alacriti.ebpp.resteasy.resource;
 
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.FileReader;
+import java.io.IOException;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+import java.util.regex.Pattern;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
@@ -12,10 +22,12 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
 import org.apache.log4j.Logger;
+import org.jboss.resteasy.annotations.providers.multipart.MultipartForm;
 
 import com.alacriti.ebpp.biz.delegate.BillerDelegate;
 import com.alacriti.ebpp.model.vo.BillsDetailsVO;
 import com.alacriti.ebpp.model.vo.CustomerVO;
+import com.alacriti.ebpp.model.vo.Model;
 import com.alacriti.ebpp.model.vo.ViewCustomer;
 import com.alacriti.ebpp.util.QuartzMain;
 
@@ -23,6 +35,102 @@ import com.alacriti.ebpp.util.QuartzMain;
 public class BillerResource {
 	public static final Logger log= Logger.getLogger(CustomerResource.class); 
 		
+	
+	@POST
+	@Path("/uploadCustomersList")
+	@Produces(MediaType.TEXT_PLAIN)
+	@Consumes("multipart/form-data")
+	public ArrayList<Integer> uploadCustomersList(@MultipartForm Model form) throws IOException {
+		log.debug("=========>> uploadCustomersList method in BillerResource class ::");
+		ArrayList<Integer> wrongLines= new ArrayList<Integer>(); 
+        String fileLocation = "/home/bhaskararaob/Documents/wildfly-8.0.0.Final/csv";
+        DateFormat df = new SimpleDateFormat("yyyyMMddhhmmss");
+        String fileName = fileLocation + "/" + df.format(new Date())+".csv";
+       
+        File file = new File(fileName);
+
+        if (!file.exists()) {
+            file.createNewFile();
+        }
+
+        FileOutputStream fop = new FileOutputStream(file);
+
+        fop.write(form.getFile());
+        fop.flush();
+        fop.close();
+        String line = "";
+        Pattern pattern;
+        int count=2;
+        final String emailPattern = "^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@((\\[[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}\\])|(([a-zA-Z\\-0-9]+\\.)+[a-zA-Z]{2,}))$";
+
+        CustomerVO cust= new CustomerVO();
+        ArrayList<CustomerVO> customer= new ArrayList<CustomerVO>();
+        BillerDelegate billerDelegate=null;
+        boolean result=false;
+        BufferedReader br = new BufferedReader(new FileReader(fileName));
+        br.readLine();
+        while ((line = br.readLine()) != null) {
+        	String[] country = line.split(",");
+        	String email = country[1];
+        	pattern = Pattern.compile(emailPattern);
+          if(pattern.matcher(email).matches() == false){
+        	wrongLines.add(count);
+        	System.out.println(country[1]);
+          }else{
+        	  cust.setEmail(email);
+        	  cust.setUsername(country[0]);
+        	  customer.add(cust);
+          }
+          ++count;
+         
+         }
+        try {
+			billerDelegate =new BillerDelegate();
+			result = billerDelegate.addCustomers(customer);
+		} catch (Exception e) {
+			log.error("Exception in addCustomers of BillerResource : "+ e.getMessage(), e);
+			e.printStackTrace();
+		}
+        
+		return wrongLines;
+	}
+	
+	@GET
+	@Path("/getpaginationCountOfCustomerBills")
+	@Produces(MediaType.APPLICATION_JSON)
+	@Consumes(MediaType.APPLICATION_JSON)
+	public Response getpaginationCountOfCustomerBills(){
+		log.debug("=========>> getpaginationCountOfCustomerBills method in BillerResource class ::");
+		int count=0;
+		BillerDelegate billerDelegate=null;
+		try {
+			billerDelegate =new BillerDelegate();
+			count = billerDelegate.getpaginationCountOfCustomerBillsInfo();
+		} catch (Exception e) {
+			log.error("Exception in getpaginationCountOfCustomerBills of BillerResource : "+ e.getMessage(), e);
+			e.printStackTrace();
+		}
+		return Response.status(200).entity(count).build();
+	}
+	
+	@GET
+	@Path("/getpaginationCountOfCustomers")
+	@Produces(MediaType.APPLICATION_JSON)
+	@Consumes(MediaType.APPLICATION_JSON)
+	public Response getpaginationCountOfCustomers(){
+		log.debug("=========>> getpaginationCountOfCustomers method in BillerResource class ::");
+		int count=0;
+		BillerDelegate billerDelegate=null;
+		try {
+			billerDelegate =new BillerDelegate();
+			count = billerDelegate.getpaginationCountOfCustomersInfo();
+		} catch (Exception e) {
+			log.error("Exception in getpaginationCountOfCustomers of BillerResource : "+ e.getMessage(), e);
+			e.printStackTrace();
+		}
+		return Response.status(200).entity(count).build();
+	}
+	
 		@POST
 		@Path("/addCustomers")
 		@Produces(MediaType.APPLICATION_JSON)
@@ -69,38 +177,40 @@ public class BillerResource {
 		@Path("/getCustomers")
 		@Produces(MediaType.APPLICATION_JSON)
 		@Consumes(MediaType.APPLICATION_JSON)
-		public ArrayList<ViewCustomer> getCustomerInfo(){
+		public List<ViewCustomer> getCustomerInfo(@QueryParam("start") int start, @QueryParam("end") int end){
 			log.debug("=========>> getCustomerInfo method in BillerResource class ::");
 			ArrayList<ViewCustomer> customersList = null;
+			List<ViewCustomer> resultList=null;
 			ViewCustomer customer= new ViewCustomer();
 			BillerDelegate billerDelegate=null;
 			try {
 				billerDelegate =new BillerDelegate();
-				customersList = billerDelegate.getCustomerInfo(customer);
+				resultList = billerDelegate.getCustomerInfo(customer,start,end);
 			} catch (Exception e) {
 				log.error("Exception in addCustomers of BillerResource : "+ e.getMessage(), e);
 				e.printStackTrace();
 			}
-			return customersList;
+			return resultList;
 		}
 		
 		@GET
 		@Path("/getCustomersToView")
 		@Produces(MediaType.APPLICATION_JSON)
 		@Consumes(MediaType.APPLICATION_JSON)
-		public ArrayList<ViewCustomer> getCustomerInfoToView(){
+		public List<ViewCustomer> getCustomerInfoToView(@QueryParam("start") int start, @QueryParam("end") int end){
 			log.debug("=========>> getCustomerInfo method in BillerResource class ::");
 			ArrayList<ViewCustomer> customersList = null;
+			List<ViewCustomer> resultList=null;
 			ViewCustomer customer= new ViewCustomer();
 			BillerDelegate billerDelegate=null;
 			try {
 				billerDelegate =new BillerDelegate();
-				customersList = billerDelegate.getCustomerInfoToView(customer);
+				resultList = billerDelegate.getCustomerInfoToView(customer,start,end);
 			} catch (Exception e) {
 				log.error("Exception in addCustomers of BillerResource : "+ e.getMessage(), e);
 				e.printStackTrace();
 			}
-			return customersList;
+			return resultList;
 		}
 		
 		@GET

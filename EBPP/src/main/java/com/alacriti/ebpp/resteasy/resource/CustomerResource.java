@@ -40,21 +40,21 @@ public class CustomerResource {
 		return sessionUtility.checkForSession(session);
 	}
 	
-	
 	@POST
 	@Path("/login")
 	@Produces(MediaType.TEXT_PLAIN)
 	@Consumes(MediaType.APPLICATION_JSON)
 	public boolean addCustomer(CustomerVO customer, @Context HttpServletRequest request) {
-		log.debug("=========>> addUser method in UserResource class ::");
+		log.debug("=========>> addCustomer method in CustomerResource class ::");
 		boolean result=false;
 		CustomerDelegate customerDelegate=null;
 		try {
 			customerDelegate=new CustomerDelegate();
 			result =customerDelegate.addCustomer(customer);
 				HttpSession session= request.getSession();
+				session.setAttribute("customerName", customer.getEmail());
 		} catch (Exception e) {
-			log.error("Exception in addUser of UserResource : "+ e.getMessage(), e);
+			log.error("Exception in addCustomer of CustomerResource : "+ e.getMessage(), e);
 			e.printStackTrace();
 		}
 		return result;
@@ -78,6 +78,7 @@ public class CustomerResource {
 		return billsList;
 		
 	}
+	
 	@POST
 	@Path("/payBillThroughCard")
 	@Produces(MediaType.APPLICATION_JSON)
@@ -96,19 +97,23 @@ public class CustomerResource {
 		return Response.status(200).entity(result).build();
 		
 	}
+
 	@POST
 	@Path("/payBill")
 	@Produces(MediaType.APPLICATION_JSON)
 	@Consumes(MediaType.APPLICATION_JSON)
-	public Response payCustomerBillOnline(PayDetailsVO payment){
-		log.debug("=========>> getCustomerBills method in CustomerResource class ::");
+	public Response payCustomerBillOnline(PayDetailsVO payment, @Context HttpServletRequest request){
+		log.debug("=========>> payCustomerBillOnline method in CustomerResource class ::");
 		boolean result= false;
 		CustomerDelegate customerDelegate=null;
+		HttpSession session= request.getSession(true);
+		Object ss= session.getAttribute("customerName");
+		payment.setEmail(ss.toString());
 		try {
 			customerDelegate =new CustomerDelegate();
 			result = customerDelegate.payCustomerBillOnline(payment);
 		} catch (Exception e) {
-			log.error("Exception in getCustomerBills of CustomerResource : "+ e.getMessage(), e);
+			log.error("Exception in payCustomerBillOnline of CustomerResource : "+ e.getMessage(), e);
 			e.printStackTrace();
 		}
 		return Response.status(200).entity(result).build();
@@ -118,17 +123,21 @@ public class CustomerResource {
 	@GET
 	@Path("/getCustomerPreviousBills")
 	@Produces(MediaType.APPLICATION_JSON)
-	public ArrayList<PayDetailsVO> getCustomerPaidBills(@QueryParam("email") String email){
+	public ArrayList<PayDetailsVO> getCustomerPaidBills(@QueryParam("email") String email, @Context HttpServletRequest request){
 		log.debug("=========>> getCustomerPaidBills method in CustomerResource class ::");
 		ArrayList<PayDetailsVO> payBillsList = null;
 		PayDetailsVO detail=new PayDetailsVO();
 		detail.setEmail(email);
 		CustomerDelegate customerDelegate=null;
+		
+		HttpSession session= request.getSession(true);
+		Object ss= session.getAttribute("customerName");
+		
 		try {
 			customerDelegate =new CustomerDelegate();
 			payBillsList = customerDelegate.getCustomerPaidBills(detail);
 		} catch (Exception e) {
-			log.error("Exception in getCustomerPreviousBills of CustomerResource : "+ e.getMessage(), e);
+			log.error("Exception in getCustomerPaidBills of CustomerResource : "+ e.getMessage(), e);
 			e.printStackTrace();
 		}
 		return payBillsList;

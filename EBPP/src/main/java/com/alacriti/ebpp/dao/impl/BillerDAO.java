@@ -16,6 +16,7 @@ import com.alacriti.ebpp.model.vo.CustomerVO;
 import com.alacriti.ebpp.model.vo.ViewCustomer;
 
 public class BillerDAO extends BaseDAO{
+	
 public static final Logger log= Logger.getLogger(BillerDAO.class);
 	
 	public BillerDAO(){
@@ -55,6 +56,69 @@ public static final Logger log= Logger.getLogger(BillerDAO.class);
 				+DBColumnConstants.CUSTOMERS_LIST_TBL_EMAIL+","
 				+DBColumnConstants.CUSTOMERS_LIST_TBL_NAME
 				+")values(?,?);";
+	}
+	
+	public int getpaginationCountOfCustomerBillsInfoDAO() throws DAOException{
+		log.debug("=========>> getpaginationCountOfCustomerBillsInfoDAO method in BillerDAO class ::");
+		int count=0;
+		Statement st=null;
+		ResultSet rs=null;
+		try{
+			st=getConnection().createStatement();
+			rs=st.executeQuery(isCountOfCustomerBillsSqlCmd());
+			while(rs.next()){
+				count++;
+			}
+		}catch(SQLException e){
+			log.error("SQL Exception Occured in getpaginationCountOfCustomerBillsInfoDAO: " + e.getMessage(), e);
+			e.printStackTrace();
+			throw new DAOException("SQL Exception Occured in selectStatement");
+		}
+		catch(Exception e){
+			log.error("Exception Occured in getpaginationCountOfCustomerBillsInfoDAO: " + e.getMessage(), e);
+			e.printStackTrace();
+			throw new DAOException();
+		}finally{
+			close(rs);
+			close(st);
+		}
+		return count;
+	}
+	
+	private String isCountOfCustomerBillsSqlCmd(){
+		return "select cl.name,bd.email,sum(bd.amount), bd.duedate from bhaskarb_ebpp_billsDetails_tbl as bd, "
+				+ "bhaskarb_ebpp_customers_list_tbl as cl where bd.email=cl.email group by bd.email";
+	}
+	
+	public int getpaginationCountOfCustomersInfoBODAO() throws DAOException{
+		log.debug("=========>> getpaginationCountOfCustomersInfoBODAO method in BillerDAO class ::");
+		int count=0;
+		Statement st=null;
+		ResultSet rs=null;
+		try{
+			st=getConnection().createStatement();
+			rs=st.executeQuery(isCountOfCustomersSqlCmd());
+			while(rs.next()){
+				count++;
+			}
+		}catch(SQLException e){
+			log.error("SQL Exception Occured in getpaginationCountOfCustomersInfoBODAO: " + e.getMessage(), e);
+			e.printStackTrace();
+			throw new DAOException("SQL Exception Occured in selectStatement");
+		}
+		catch(Exception e){
+			log.error("Exception Occured in getpaginationCountOfCustomersInfoBODAO: " + e.getMessage(), e);
+			e.printStackTrace();
+			throw new DAOException();
+		}finally{
+			close(rs);
+			close(st);
+		}
+		return count;
+	}
+	
+	private String isCountOfCustomersSqlCmd(){
+		return "select email from bhaskarb_ebpp_customers_list_tbl group by email";
 	}
 	
 	public void addBillsToDB(BillsDetailsVO bill) throws DAOException{
@@ -225,8 +289,6 @@ public static final Logger log= Logger.getLogger(BillerDAO.class);
 	private String getAllCustomerDetailsToViewSqlCmd(ViewCustomer customer){
 		return "select name,email from bhaskarb_ebpp_customers_list_tbl group by email";
 	}
-	
-	
 	
 	public ArrayList<BillsDetailsVO> getBillsInfoDAO(BillsDetailsVO bills) throws DAOException{
 		log.debug("=========>> getBillsInfoDAO method in BillerDAO class ::");
