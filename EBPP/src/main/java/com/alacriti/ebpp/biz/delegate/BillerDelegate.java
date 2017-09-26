@@ -1,8 +1,18 @@
 package com.alacriti.ebpp.biz.delegate;
 
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.FileReader;
+import java.io.IOException;
 import java.sql.Connection;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
+import java.util.regex.Pattern;
 
 import org.apache.log4j.Logger;
 
@@ -12,6 +22,7 @@ import com.alacriti.ebpp.bo.impl.CustomerValidate;
 import com.alacriti.ebpp.exception.BOException;
 import com.alacriti.ebpp.model.vo.BillsDetailsVO;
 import com.alacriti.ebpp.model.vo.CustomerVO;
+import com.alacriti.ebpp.model.vo.Model;
 import com.alacriti.ebpp.model.vo.ViewCustomer;
 import com.alacriti.ebpp.util.MailingService;
 
@@ -22,6 +33,60 @@ public class BillerDelegate extends BaseDelegate {
 	
 	 public BillerDelegate() {
 		super();
+	 }
+	 
+	 
+	 public ArrayList<Integer> validateCustomers(Model form) throws IOException{
+		 
+		 	boolean result=false;
+		 	String line = "";
+	        Pattern pattern;
+	        int count=2;
+			ArrayList<Integer> wrongLines= new ArrayList<Integer>();
+			ArrayList<CustomerVO> customer= new ArrayList<CustomerVO>();
+	        BillerDelegate billerDelegate=null;
+	        String fileLocation = "/home/bhaskararaob/Documents/wildfly-8.0.0.Final/csv";
+	        DateFormat df = new SimpleDateFormat("yyyyMMddhhmmss");
+	        String fileName = fileLocation + "/" + df.format(new Date())+".csv";
+	       
+	        File file = new File(fileName);
+	        if (!file.exists()) {
+	            file.createNewFile();
+	        }
+
+	        FileOutputStream fop = new FileOutputStream(file);
+	        fop.write(form.getFile());
+	        fop.flush();
+	        fop.close();
+	        
+	        final String emailPattern = "^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@((\\[[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}\\])|(([a-zA-Z\\-0-9]+\\.)+[a-zA-Z]{2,}))$";
+
+	        
+	        
+	        BufferedReader br = new BufferedReader(new FileReader(fileName));
+	        br.readLine();
+	        while ((line = br.readLine()) != null) {
+	        	String[] country = line.split(",");
+	        	String email = country[1];
+	        	pattern = Pattern.compile(emailPattern);
+	          if(pattern.matcher(email).matches() == false){
+	        	  wrongLines.add(count);
+	          }else{
+	        	  /*cust.setEmail(email);
+	        	  cust.setUsername(country[0]);*/
+	        	  customer.add(new CustomerVO(country[0],email));
+	          }
+	          ++count;
+	         
+	         }
+	        try {
+				billerDelegate =new BillerDelegate();
+				result = billerDelegate.addCustomers(customer);
+			} catch (Exception e) {
+				log.error("Exception in addCustomers of BillerResource : "+ e.getMessage(), e);
+				e.printStackTrace();
+			}
+	        return wrongLines;
 	 }
 	 
 	 public boolean addCustomers(ArrayList<CustomerVO> customers){
@@ -78,14 +143,12 @@ public class BillerDelegate extends BaseDelegate {
 				for(BillsDetailsVO bill: billsDetails)
 				{
 					if(customerValidate.isCustomerEmailExistInCustomersList(bill.getEmail())){
-						System.out.println("name:shar");
 						if(!billValidate.isBillNumberExistInBillsDetailsList(bill.getBillnumber())){
 								billerbo= new BillerBO(connection);
 								billerbo.addBillsBO(bill);
 						}
 					}else{
 						result=false;
-						System.out.println("name: Bhaskar");
 						break;
 					}
 				}
@@ -187,7 +250,33 @@ public class BillerDelegate extends BaseDelegate {
 			
 			return count;
 	 }
+	 public int getpaginationCountOfCustomersTotalBillsInfo(){
+		 log.debug("=========>> getpaginationCountOfCustomersTotalBillsInfo method in BillerDelegate class ::");
+		 BillerBO billerbo=null;
+			Connection connection=null;
+			boolean rollBack = false;
+			int count=0;
+			
+			try{
+				connection = startDBTransaction();
+				setConnection(connection);
+				billerbo= new BillerBO(connection);
+				count = billerbo.getpaginationCountOfCustomersTotalBillsInfoBO();
+			}catch(BOException e){
+				rollBack=true;
+				e.printStackTrace();
+				log.error("BOException in getpaginationCountOfCustomersTotalBillsInfo : "+ e.getMessage(), e);
+			}catch(Exception e){
+				rollBack=true;
+				log.error("Exception in getpaginationCountOfCustomersTotalBillsInfo : "+ e.getMessage(), e);
+			}finally{
+				endDBTransaction(connection, rollBack);
+			}
+			
+			return count;
+	 }
 	 
+	
 	 public List<ViewCustomer> getCustomerInfo(ViewCustomer customer,int start,int end){
 		 log.debug("=========>> getCustomerInfo method in BillerDelegate class ::");
 		 BillerBO billerbo=null;
@@ -200,7 +289,7 @@ public class BillerDelegate extends BaseDelegate {
 				connection = startDBTransaction();
 				setConnection(connection);
 				billerbo= new BillerBO(connection);
-				resultList = billerbo.getCustomerInfoBO(customer,start,end);
+				resultList = billerbo.getCustomerInfoBO(customer,start,end-start);
 			}catch(BOException e){
 				rollBack=true;
 				e.printStackTrace();
@@ -227,7 +316,7 @@ public class BillerDelegate extends BaseDelegate {
 				connection = startDBTransaction();
 				setConnection(connection);
 				billerbo= new BillerBO(connection);
-				resultList = billerbo.getCustomerInfoToViewBO(customer,start,end);
+				resultList = billerbo.getCustomerInfoToViewBO(customer,start,end-start);
 			}catch(BOException e){
 				rollBack=true;
 				e.printStackTrace();
@@ -242,18 +331,19 @@ public class BillerDelegate extends BaseDelegate {
 			return resultList;
 	 }
 	 
-	 public ArrayList<BillsDetailsVO> getBillsInfo(BillsDetailsVO bills){
+	 public List<BillsDetailsVO> getBillsInfo(BillsDetailsVO bills, int start, int end){
 		 log.debug("=========>> getBillsInfo method in BillerDelegate class ::");
 		 BillerBO billerbo=null;
 			Connection connection=null;
 			boolean rollBack = false;
 			ArrayList<BillsDetailsVO> billsList = null;
+			List<BillsDetailsVO> resultList = null;
 			
 			try{
 				connection = startDBTransaction();
 				setConnection(connection);
 				billerbo= new BillerBO(connection);
-				billsList = billerbo.getBillsInfoBO(bills);
+				resultList = billerbo.getBillsInfoBO(bills,start,end-start);
 			}catch(BOException e){
 				rollBack=true;
 				e.printStackTrace();
@@ -265,7 +355,7 @@ public class BillerDelegate extends BaseDelegate {
 				endDBTransaction(connection, rollBack);
 			}
 			
-			return billsList;
+			return resultList;
 	 }
 
 	 public ArrayList<ViewCustomer> getSearchResultsOfCustomers(ViewCustomer customer, String searchTerm){

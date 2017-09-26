@@ -27,7 +27,11 @@ export class BillsmanagementComponent implements OnInit {
   onrefreshChange: boolean;
   orderElement = null;
   customerBillsList: CustomersList [];
-
+  paginationArrayTotal= [];
+  pagination: any;
+  errorMsg: any;
+  start = 1;
+  end: number;
 
   constructor(private billsList: BillsdetailsService, private customerInfo: CustomerslistService,
               private router: Router) { }
@@ -46,7 +50,7 @@ export class BillsmanagementComponent implements OnInit {
            // this.isUploadedBills = true;
           } else {
             alert('Bills are not added beacause some customers are not found ');
-            this.router.navigate(['/home/customermanagement']);
+            this.router.navigate(['/home/billsmanagement']);
           }
           this.billsResponse  = response; }
       );
@@ -75,11 +79,31 @@ export class BillsmanagementComponent implements OnInit {
   ngOnInit() {
     this.onrefreshChange = true;
     this.isCustomerBills = false;
-    this.billsList.getBills()
+    this.billsList.getBills(0, 3)
       .subscribe((response) => { this.retriveBillsList = response.json()});
-    this.date = new Date();
+    this.getBillsPagination();
   }
 
+  getBillsPagination() {
+    this.billsList.getCountofCustomersBillsList()
+      .subscribe((response) => {
+          this.pagination = response; },
+        errormsg => this.errorMsg = errormsg + 'ngoninit',
+        () => { this.PaginationArrayCallBackFunction(); }
+      );
+  }
+
+  PaginationArrayCallBackFunction() {
+    this.paginationArrayTotal = this.billsList.getPaginationArray(this.pagination);
+    console.log(this.paginationArrayTotal);
+  }
+
+  customersBillsList(pageid) {
+    this.start = ( pageid - 1) * 3  ;
+    this.end =   pageid * 3;
+    this.billsList.getBills(this.start, this.end)
+      .subscribe((response) => {this.retriveBillsList = response.json(); });
+  }
 
   searchOnBillsEmailOrName(term: string): void {
     this.startDate = null;
@@ -88,7 +112,6 @@ export class BillsmanagementComponent implements OnInit {
     if (term) {
       this.billsList.searchBills(term)
         .subscribe(data => {
-          console.log(data);
           this.searchBillsList = data.json().slice(0, 4); }
         );
       this.isUploadedBills = true;
@@ -115,7 +138,6 @@ onSubmit(datePickerValue: NgForm) {
   this.eDate = datePipe.transform(datePickerValue.value.endDate, 'y-M-d');
   this.billsList.searchBillsBasedonDate( this.sDate, this.eDate)
     .subscribe(data => {
-      console.log(data.json().length);
      if (data.json().length !== 0) {
        this.isUploadedBills = true;
        this.onrefreshChange = false;
@@ -139,7 +161,7 @@ onSubmit(datePickerValue: NgForm) {
     this.isUploadedBills = false;
     this.isCustomerBills = false;
 
-    this.billsList.getBills()
+    this.billsList.getBills(0, 3)
       .subscribe((response) => { this.retriveBillsList = response.json()});
   }
 

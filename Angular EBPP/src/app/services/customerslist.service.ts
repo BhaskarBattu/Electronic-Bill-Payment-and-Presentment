@@ -5,11 +5,12 @@ import {BehaviorSubject} from 'rxjs/BehaviorSubject';
 import {Observable} from 'rxjs/Observable';
 import {CustomersList} from '../model/CustomersList';
 import {BillsList} from '../model/billsList';
+import {BaseUrl} from '../model/baseUrl';
 
 @Injectable()
 export class CustomerslistService {
   // baseUrl: any= 'http://192.168.35.61:8080/EBPP-0.0.1-SNAPSHOT';
-  baseUrl: any= 'http://localhost:8080/EBPP-0.0.1-SNAPSHOT';
+  baseUrl = BaseUrl.baseUrlID;
   constructor(private http: Http) { }
 
   public uploadCustomersList(details: any) {

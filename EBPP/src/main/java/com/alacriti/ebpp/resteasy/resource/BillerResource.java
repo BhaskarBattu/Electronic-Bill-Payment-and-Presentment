@@ -42,56 +42,16 @@ public class BillerResource {
 	@Consumes("multipart/form-data")
 	public ArrayList<Integer> uploadCustomersList(@MultipartForm Model form) throws IOException {
 		log.debug("=========>> uploadCustomersList method in BillerResource class ::");
-		ArrayList<Integer> wrongLines= new ArrayList<Integer>(); 
-        String fileLocation = "/home/bhaskararaob/Documents/wildfly-8.0.0.Final/csv";
-        DateFormat df = new SimpleDateFormat("yyyyMMddhhmmss");
-        String fileName = fileLocation + "/" + df.format(new Date())+".csv";
-       
-        File file = new File(fileName);
-
-        if (!file.exists()) {
-            file.createNewFile();
-        }
-
-        FileOutputStream fop = new FileOutputStream(file);
-
-        fop.write(form.getFile());
-        fop.flush();
-        fop.close();
-        String line = "";
-        Pattern pattern;
-        int count=2;
-        final String emailPattern = "^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@((\\[[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}\\])|(([a-zA-Z\\-0-9]+\\.)+[a-zA-Z]{2,}))$";
-
-        CustomerVO cust= new CustomerVO();
-        ArrayList<CustomerVO> customer= new ArrayList<CustomerVO>();
         BillerDelegate billerDelegate=null;
-        boolean result=false;
-        BufferedReader br = new BufferedReader(new FileReader(fileName));
-        br.readLine();
-        while ((line = br.readLine()) != null) {
-        	String[] country = line.split(",");
-        	String email = country[1];
-        	pattern = Pattern.compile(emailPattern);
-          if(pattern.matcher(email).matches() == false){
-        	wrongLines.add(count);
-        	System.out.println(country[1]);
-          }else{
-        	  cust.setEmail(email);
-        	  cust.setUsername(country[0]);
-        	  customer.add(cust);
-          }
-          ++count;
-         
-         }
-        try {
-			billerDelegate =new BillerDelegate();
-			result = billerDelegate.addCustomers(customer);
-		} catch (Exception e) {
-			log.error("Exception in addCustomers of BillerResource : "+ e.getMessage(), e);
-			e.printStackTrace();
-		}
-        
+		ArrayList<Integer> wrongLines= new ArrayList<Integer>(); 
+		
+		 try {
+				billerDelegate =new BillerDelegate();
+				wrongLines = billerDelegate.validateCustomers(form);
+			} catch (Exception e) {
+				log.error("Exception in addCustomers of BillerResource : "+ e.getMessage(), e);
+				e.printStackTrace();
+			}
 		return wrongLines;
 	}
 	
@@ -130,7 +90,25 @@ public class BillerResource {
 		}
 		return Response.status(200).entity(count).build();
 	}
-	
+
+	@GET
+	@Path("/getpaginationCountOfCustomersTotalBills")
+	@Produces(MediaType.APPLICATION_JSON)
+	@Consumes(MediaType.APPLICATION_JSON)
+	public Response getpaginationCountOfCustomersTotalBills(){
+		log.debug("=========>> getpaginationCountOfCustomersTotalBills method in BillerResource class ::");
+		int count=0;
+		BillerDelegate billerDelegate=null;
+		try {
+			billerDelegate =new BillerDelegate();
+			count = billerDelegate.getpaginationCountOfCustomersTotalBillsInfo();
+		} catch (Exception e) {
+			log.error("Exception in getpaginationCountOfCustomersTotalBills of BillerResource : "+ e.getMessage(), e);
+			e.printStackTrace();
+		}
+		return Response.status(200).entity(count).build();
+	}
+
 		@POST
 		@Path("/addCustomers")
 		@Produces(MediaType.APPLICATION_JSON)
@@ -161,9 +139,9 @@ public class BillerResource {
 			try {
 				billerDelegate =new BillerDelegate();
 				result = billerDelegate.addBills(billsDetails);
-				if(result){
+				/*if(result){
 					sendMail.sendBillsToCustomers();
-				}
+				}*/
 			} catch (Exception e) {
 				log.error("Exception in addCustomers of BillerResource : "+ e.getMessage(), e);
 				e.printStackTrace();
@@ -217,19 +195,20 @@ public class BillerResource {
 		@Path("/getBills")
 		@Produces(MediaType.APPLICATION_JSON)
 		@Consumes(MediaType.APPLICATION_JSON)
-		public ArrayList<BillsDetailsVO> getBillsInfo(){
+		public List<BillsDetailsVO> getBillsInfo(@QueryParam("start") int start, @QueryParam("end") int end){
 			log.debug("=========>> getBillsInfo method in BillerResource class ::");
 			ArrayList<BillsDetailsVO> billsList = null;
+			List<BillsDetailsVO> resultList = null;
 			BillsDetailsVO bills= new BillsDetailsVO();
 			BillerDelegate billerDelegate=null;
 			try {
 				billerDelegate =new BillerDelegate();
-				billsList = billerDelegate.getBillsInfo(bills);
+				resultList = billerDelegate.getBillsInfo(bills,start,end);
 			} catch (Exception e) {
 				log.error("Exception in addCustomers of BillerResource : "+ e.getMessage(), e);
 				e.printStackTrace();
 			}
-			return billsList;
+			return resultList;
 			
 		}
 		

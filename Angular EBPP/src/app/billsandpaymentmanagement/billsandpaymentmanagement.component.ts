@@ -20,10 +20,10 @@ export class BillsandpaymentmanagementComponent implements OnInit {
   paybillNo: any;
   paymail: any;
   paymonth: any;
-  creditordebitnumber: any;
-  nameonthecard: any;
-  expmonth: any;
-  expyear: any;
+  creditOrDebitnumber: any;
+  nameOnTheCard: any;
+  expMonth: any;
+  expYear: any;
   cvv: any;
   bank: any;
   wallet: any;
@@ -34,7 +34,6 @@ export class BillsandpaymentmanagementComponent implements OnInit {
   customerBillsList: CustomersList [];
   constructor(private custInfo: CustomerslistService, private router: Router ) {
     this.customerMail = window.localStorage.getItem('customerMail');
-    console.log(this.customerMail);
     if (this.customerMail) {
       this.custInfo.getCustomerBills(this.customerMail)
         .subscribe((response) => {
@@ -52,10 +51,10 @@ export class BillsandpaymentmanagementComponent implements OnInit {
     this.viewSummary = true;
     this.isPay = false;
 
-    this.creditordebitnumber = null;
-    this.nameonthecard = null;
-    this.expmonth = null;
-    this.expyear = null;
+    this.creditOrDebitnumber = null;
+    this.nameOnTheCard = null;
+    this.expMonth = null;
+    this.expYear = null;
     this.cvv = null;
     this.bank = null;
     this.wallet = null;
@@ -71,20 +70,20 @@ export class BillsandpaymentmanagementComponent implements OnInit {
     this.isPay = false;
     this.displayPayResponse = false;
 
-    this.creditordebitnumber = null;
-    this.nameonthecard = null;
-    this.expmonth = null;
-    this.expyear = null;
+    this.creditOrDebitnumber = null;
+    this.nameOnTheCard = null;
+    this.expMonth = null;
+    this.expYear = null;
     this.cvv = null;
     this.bank = null;
     this.wallet = null;
   }
   payBill(payMail: String, month: any, billno: any, amount: String, duedate: any) {
     this.isPay = true;
-    this.creditordebitnumber = null;
-    this.nameonthecard = null;
-    this.expmonth = null;
-    this.expyear = null;
+    this.creditOrDebitnumber = null;
+    this.nameOnTheCard = null;
+    this.expMonth = null;
+    this.expYear = null;
     this.cvv = null;
     this.bank = null;
     this.wallet = null;
@@ -94,11 +93,11 @@ export class BillsandpaymentmanagementComponent implements OnInit {
   }
 
   onSubmitThroughCard(paymentDetailsThroughCard: NgForm) {
-    this.cardno = paymentDetailsThroughCard.value.creditordebitnumber;
+    this.cardno = paymentDetailsThroughCard.value.creditOrDebitnumber;
     this.cvvc = paymentDetailsThroughCard.value.cvv;
-    this.expmon = paymentDetailsThroughCard.value.expmonth;
-    this.expye = paymentDetailsThroughCard.value.expyear;
-    this.nameonca = paymentDetailsThroughCard.value.nameonthecard;
+    this.expmon = paymentDetailsThroughCard.value.expMonth;
+    this.expye = paymentDetailsThroughCard.value.expYear;
+    this.nameonca = paymentDetailsThroughCard.value.nameOnTheCard;
     this.paya = paymentDetailsThroughCard.value.payamount;
     this.payb = paymentDetailsThroughCard.value.paybillNo;
     this.payma = paymentDetailsThroughCard.value.paymail;
@@ -112,10 +111,10 @@ export class BillsandpaymentmanagementComponent implements OnInit {
                   this.isPay = false;
                     this.displayPayResponse = true;
 
-                  this.creditordebitnumber = null;
-                  this.nameonthecard = null;
-                  this.expmonth = null;
-                  this.expyear = null;
+                  this.creditOrDebitnumber = null;
+                  this.nameOnTheCard = null;
+                  this.expMonth = null;
+                  this.expYear = null;
                   this.cvv = null;
                   this.bank = null;
                   this.wallet = null;
@@ -153,10 +152,10 @@ export class BillsandpaymentmanagementComponent implements OnInit {
             this.isPay = false;
             this.displayPayResponse = true;
 
-            this.creditordebitnumber = null;
-            this.nameonthecard = null;
-            this.expmonth = null;
-            this.expyear = null;
+            this.creditOrDebitnumber = null;
+            this.nameOnTheCard = null;
+            this.expMonth = null;
+            this.expYear = null;
             this.cvv = null;
             this.bank = null;
             this.wallet = null;
@@ -189,10 +188,10 @@ export class BillsandpaymentmanagementComponent implements OnInit {
             this.isPay = false;
             this.displayPayResponse = true;
 
-            this.creditordebitnumber = null;
-            this.nameonthecard = null;
-            this.expmonth = null;
-            this.expyear = null;
+            this.creditOrDebitnumber = null;
+            this.nameOnTheCard = null;
+            this.expMonth = null;
+            this.expYear = null;
             this.cvv = null;
             this.bank = null;
             this.wallet = null;

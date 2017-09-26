@@ -121,6 +121,11 @@
  </div>
   <br>
 </div>
+  <ul>
+    <li>&lt;</li>
+    <li *ngFor="let num of paginationArrayTotal" (click)="customersBillsList(num)">{{num}}</li>
+    <li> &gt;</li>
+  </ul>
 
 </div>
 

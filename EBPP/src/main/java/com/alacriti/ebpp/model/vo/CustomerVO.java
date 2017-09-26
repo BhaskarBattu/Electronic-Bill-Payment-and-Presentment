@@ -34,6 +34,11 @@ public class CustomerVO {
 		this.email = email;
 		this.password = password;
 	}
+	public CustomerVO(String username, String email) {
+		super();
+		this.username = username;
+		this.email = email;
+	}
 	
 	
 }

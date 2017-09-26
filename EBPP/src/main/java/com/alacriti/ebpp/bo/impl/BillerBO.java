@@ -69,18 +69,34 @@ public class BillerBO extends BaseBO{
 		}
 		return count;
 	}
+	public  int getpaginationCountOfCustomersTotalBillsInfoBO() throws BOException{
+		log.debug("=========>> getpaginationCountOfCustomersTotalBillsInfoBO method in CustomerBO class ::");
+		BillerDAO billerdao=null;
+		int count=0;
+		try{
+			billerdao=new BillerDAO(getConnection());
+			count=billerdao.getpaginationCountOfCustomersTotalBillsInfoDAO();
+		}catch (DAOException e) {
+			log.error("DAOException in getpaginationCountOfCustomersTotalBillsInfoBO of CustomerBO " + e.getMessage(), e);
+			throw new BOException("DAOException Occured");
+		} catch (Exception e) {
+			log.error("Exception in getpaginationCountOfCustomersTotalBillsInfoBO of CustomerBO " + e.getMessage(), e);
+			throw new BOException();
+		}
+		return count;
+	}
 	
 	public  void addBillsBO(BillsDetailsVO bill) throws BOException{
-		log.debug("=========>> addCustomer method in CustomerBO class ::");
+		log.debug("=========>> addBillsBO method in CustomerBO class ::");
 		BillerDAO billerdao=null;
 		try{
 			billerdao=new BillerDAO(getConnection());
 			billerdao.addBillsToDB(bill);
 		}catch (DAOException e) {
-			log.error("DAOException in addcustomer of CustomerBO " + e.getMessage(), e);
+			log.error("DAOException in addBillsBO of CustomerBO " + e.getMessage(), e);
 			throw new BOException("DAOException Occured");
 		} catch (Exception e) {
-			log.error("Exception in addcustomer of CustomerBO " + e.getMessage(), e);
+			log.error("Exception in addBillsBO of CustomerBO " + e.getMessage(), e);
 			throw new BOException();
 		}
 	}
@@ -109,13 +125,8 @@ public class BillerBO extends BaseBO{
 		List<ViewCustomer> resultList=null;
 		try{
 			billerdao=new BillerDAO(getConnection());
-			customersList = billerdao.getCustomerInfoDAO(customer);
-			if(end>=customersList.size()){
-				resultList = customersList.subList(start, customersList.size());
-			} else {
-				resultList = customersList.subList(start, end);
-			}
-			
+			//customersList = billerdao.getCustomerInfoDAO(customer,start,end);
+			resultList = billerdao.getCustomerInfoDAO(customer,start,end);
 		}catch (DAOException e) {
 			log.error("DAOException in getCustomerInfoBO of BillerBO " + e.getMessage(), e);
 			throw new BOException("DAOException Occured");
@@ -134,13 +145,8 @@ public class BillerBO extends BaseBO{
 		
 		try{
 			billerdao=new BillerDAO(getConnection());
-			customersList = billerdao.getCustomerInfoToViewDAO(customer);
+			resultList = billerdao.getCustomerInfoToViewDAO(customer,start,end);
 			
-			if(end>=customersList.size()){
-				resultList = customersList.subList(start, customersList.size());
-			} else {
-				resultList = customersList.subList(start, end);
-			}
 		}catch (DAOException e) {
 			log.error("DAOException in getCustomerInfoToViewDAO of BillerBO " + e.getMessage(), e);
 			throw new BOException("DAOException Occured");
@@ -151,13 +157,16 @@ public class BillerBO extends BaseBO{
 		return resultList;
 	}
 	
-	public  ArrayList<BillsDetailsVO> getBillsInfoBO(BillsDetailsVO bills) throws BOException{
+	public  List<BillsDetailsVO> getBillsInfoBO(BillsDetailsVO bills, int start, int end) throws BOException{
 		log.debug("=========>> getBillsInfoBO method in BillerBO class ::");
 		BillerDAO billerdao=null;
 		ArrayList<BillsDetailsVO> billsList=null;
+		List<BillsDetailsVO> resultList = null;
 		try{
 			billerdao=new BillerDAO(getConnection());
-			billsList = billerdao.getBillsInfoDAO(bills);
+			//billsList = billerdao.getBillsInfoDAO(bills);
+			resultList = billerdao.getBillsInfoDAO(bills,start,end);
+			
 		}catch (DAOException e) {
 			log.error("DAOException in getBillsInfoBO of BillerBO " + e.getMessage(), e);
 			throw new BOException("DAOException Occured");
@@ -165,7 +174,7 @@ public class BillerBO extends BaseBO{
 			log.error("Exception in getBillsInfoBO of BillerBO " + e.getMessage(), e);
 			throw new BOException();
 		}
-		return billsList;
+		return resultList;
 	}
 
 	public  ArrayList<ViewCustomer> getSearchResultsOfCustomersBO(ViewCustomer customer, String searchTerm) throws BOException{

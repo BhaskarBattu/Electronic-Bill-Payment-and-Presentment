@@ -34,6 +34,7 @@ public static final Logger log= Logger.getLogger(BillerDAO.class);
 		try{
 			int i=0;
 			pst=getPreparedStatement(getConnection(), addCustomerToDbSqlCmd());
+			System.out.println("enail:----------"+customer.getEmail());
 			pst.setString(++i,customer.getEmail());
 			pst.setString(++i,customer.getUsername());
 			pst.executeUpdate();
@@ -120,6 +121,38 @@ public static final Logger log= Logger.getLogger(BillerDAO.class);
 	private String isCountOfCustomersSqlCmd(){
 		return "select email from bhaskarb_ebpp_customers_list_tbl group by email";
 	}
+	
+	public int getpaginationCountOfCustomersTotalBillsInfoDAO() throws DAOException{
+		log.debug("=========>> getpaginationCountOfCustomersTotalBillsInfoDAO method in BillerDAO class ::");
+		int count=0;
+		Statement st=null;
+		ResultSet rs=null;
+		try{
+			st=getConnection().createStatement();
+			rs=st.executeQuery(isTotalCountOfCustomersIndividualBillsSqlCmd());
+			while(rs.next()){
+				count++;
+			}
+		}catch(SQLException e){
+			log.error("SQL Exception Occured in getpaginationCountOfCustomersTotalBillsInfoDAO: " + e.getMessage(), e);
+			e.printStackTrace();
+			throw new DAOException("SQL Exception Occured in selectStatement");
+		}
+		catch(Exception e){
+			log.error("Exception Occured in getpaginationCountOfCustomersTotalBillsInfoDAO: " + e.getMessage(), e);
+			e.printStackTrace();
+			throw new DAOException();
+		}finally{
+			close(rs);
+			close(st);
+		}
+		return count;
+	}
+	
+	private String isTotalCountOfCustomersIndividualBillsSqlCmd(){
+		return "select email from bhaskarb_ebpp_billsDetails_tbl";
+	}
+	
 	
 	public void addBillsToDB(BillsDetailsVO bill) throws DAOException{
 		log.debug("=========>> addBillsToDB method in BillerDAO class ::");
@@ -227,14 +260,14 @@ public static final Logger log= Logger.getLogger(BillerDAO.class);
 				+" from bhaskarb_ebpp_billsDetails_tbl";
 	}
 	
-	public ArrayList<ViewCustomer> getCustomerInfoDAO(ViewCustomer customer) throws DAOException{
+	public ArrayList<ViewCustomer> getCustomerInfoDAO(ViewCustomer customer,int start, int end) throws DAOException{
 		log.debug("=========>> getCustomerInfoDAO method in BillerDAO class ::");
 		Statement st=null;
 		ResultSet rs=null;
 		ArrayList<ViewCustomer> customersList = new ArrayList<ViewCustomer>();
 		try{
 			st=getConnection().createStatement();
-			rs=st.executeQuery(getAllCustomerDetailsSqlCmd(customer));
+			rs=st.executeQuery(getAllCustomerDetailsSqlCmd(customer,start,end));
 			while(rs.next()){
 				customersList.add(new ViewCustomer(rs.getString(1),rs.getString(2),rs.getString(3),rs.getDate(4)));
 			}
@@ -254,19 +287,19 @@ public static final Logger log= Logger.getLogger(BillerDAO.class);
 		return customersList;
 	}
 	
-	private String getAllCustomerDetailsSqlCmd(ViewCustomer customer){
+	private String getAllCustomerDetailsSqlCmd(ViewCustomer customer,int start, int end){
 		return "select cl.name,bd.email,sum(bd.amount), bd.duedate from bhaskarb_ebpp_billsDetails_tbl as bd, "
-				+ "bhaskarb_ebpp_customers_list_tbl as cl where bd.email=cl.email group by bd.email";
+				+ "bhaskarb_ebpp_customers_list_tbl as cl where bd.email=cl.email group by bd.email limit "+start+","+end+"";
 	}
 	
-	public ArrayList<ViewCustomer> getCustomerInfoToViewDAO(ViewCustomer customer) throws DAOException{
+	public ArrayList<ViewCustomer> getCustomerInfoToViewDAO(ViewCustomer customer,int start, int end) throws DAOException{
 		log.debug("=========>> getCustomerInfoToViewDAO method in BillerDAO class ::");
 		Statement st=null;
 		ResultSet rs=null;
 		ArrayList<ViewCustomer> customersList = new ArrayList<ViewCustomer>();
 		try{
 			st=getConnection().createStatement();
-			rs=st.executeQuery(getAllCustomerDetailsToViewSqlCmd(customer));
+			rs=st.executeQuery(getAllCustomerDetailsToViewSqlCmd(customer,start,end));
 			while(rs.next()){
 				customersList.add(new ViewCustomer(rs.getString(1),rs.getString(2)));
 			}
@@ -286,18 +319,18 @@ public static final Logger log= Logger.getLogger(BillerDAO.class);
 		return customersList;
 	}
 	
-	private String getAllCustomerDetailsToViewSqlCmd(ViewCustomer customer){
-		return "select name,email from bhaskarb_ebpp_customers_list_tbl group by email";
+	private String getAllCustomerDetailsToViewSqlCmd(ViewCustomer customer,int start, int end){
+		return "select name,email from bhaskarb_ebpp_customers_list_tbl group by email limit "+start+","+end+"";
 	}
 	
-	public ArrayList<BillsDetailsVO> getBillsInfoDAO(BillsDetailsVO bills) throws DAOException{
+	public ArrayList<BillsDetailsVO> getBillsInfoDAO(BillsDetailsVO bills,int start, int end) throws DAOException{
 		log.debug("=========>> getBillsInfoDAO method in BillerDAO class ::");
 		Statement st=null;
 		ResultSet rs=null;
 		ArrayList<BillsDetailsVO> billsList = new ArrayList<BillsDetailsVO>();
 		try{
 			st=getConnection().createStatement();
-			rs=st.executeQuery(getAllBillsDetailsShowToBillerSqlCmd(bills));
+			rs=st.executeQuery(getAllBillsDetailsShowToBillerSqlCmd(bills,start,end));
 			while(rs.next()){
 				billsList.add(new BillsDetailsVO(rs.getString(1),rs.getString(2),rs.getString(3),rs.getString(4),rs.getString(5),rs.getDate(6)));
 			}
@@ -317,9 +350,9 @@ public static final Logger log= Logger.getLogger(BillerDAO.class);
 		return billsList;
 	}
 	
-	private String getAllBillsDetailsShowToBillerSqlCmd(BillsDetailsVO bills){
+	private String getAllBillsDetailsShowToBillerSqlCmd(BillsDetailsVO bills,int start, int end){
 		return "select cl.name,bd.email,bd.month,bd.billnumber,bd.amount, bd.duedate from bhaskarb_ebpp_billsDetails_tbl as bd, bhaskarb_ebpp_customers_list_tbl as cl "
-				+ "where bd.email=cl.email order by bd.email";
+				+ "where bd.email=cl.email order by bd.email limit "+start+","+end+"";
 	}
 	
 	public ArrayList<ViewCustomer> getSearchResultsOfCustomersDAO(ViewCustomer customer, String searchTerm) throws DAOException{

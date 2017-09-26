@@ -63,7 +63,7 @@ export class CustomerComponent implements OnInit {
 
     const payload = {
       fileList,
-    }
+    };
 
     const formData: FormData = new FormData();
     formData.append('file', fileList);
@@ -116,12 +116,12 @@ export class CustomerComponent implements OnInit {
     this.ispaginationForCustList = false;
 
     this.CustList.customersList(0, 3)
-      .subscribe((response) => { this.customerslist = response.json(); });
-    this.bildPagination();
+      .subscribe((response) => { console.log(response); this.customerslist = response.json(); });
+    this.buildPagination();
 
   }
 
-  bildPagination() {
+  buildPagination() {
     this.CustList.getCountofCustomersBillsList()
       .subscribe((response) => {
       this.pagination = response; },
@@ -166,6 +166,7 @@ export class CustomerComponent implements OnInit {
   buildPaginationForCustomersList() {
     this.CustList.getCountofCustomersList()
       .subscribe((response) => {
+      console.log(response);
           this.paginationForCustomers = response; },
         errormsg => this.errorMsg = errormsg + 'ngoninit',
         () => { this.PaginationArrayCallBackFunctionForCustList(); }
@@ -178,8 +179,10 @@ export class CustomerComponent implements OnInit {
   loadCustomersList(pageid) {
     this.start = ( pageid - 1) * 3  ;
     this.end =   pageid * 3;
+    console.log('start', this.start);
+    console.log('end', this.end);
     this.CustList.customersListToView(this.start, this.end)
-      .subscribe((response) => {this.searchCustomersList = response.json(); });
+      .subscribe((response) => {console.log(response , 'dddmain'); this.searchCustomersList = response.json(); });
   }
 
 

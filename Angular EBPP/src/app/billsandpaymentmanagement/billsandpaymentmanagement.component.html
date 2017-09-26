@@ -89,11 +89,11 @@
         <input type="hidden" class="form-control" [(ngModel)]='this.isPayMonth' name="paymonth" >
         <input type="hidden" class="form-control" [(ngModel)]='this.isPaybillNo' name="paybillNo" >
         <input type="hidden" class="form-control" [(ngModel)]='this.isPayAmount' name="payamount" >
-        <input type="text" class="form-control" [(ngModel)]="creditordebitnumber" name="creditordebitnumber"  maxlength="16" minlength="16" placeholder="ENTER YOUR CARD NUMBER" required>
-        <input type="text" class="form-control" [(ngModel)]="nameonthecard" name="nameonthecard" placeholder="NAME ON THE CARD" required>
-        <input type="text" class="form-control" [(ngModel)]="expmonth" name="expmonth" placeholder="MM" maxlength="2"  id="txtExpMonth"  required>
-        <input type="text"  class="form-control"  [(ngModel)]="expyear" name="expyear" placeholder="YY" maxlength="2" id="txtExpYear"  required>
-        <input type="password" class="form-control"  [(ngModel)]="cvv"  name="cvv" placeholder="CVV" maxlength="3" id="txtCVV" required>
+        <input type="text" class="form-control" [(ngModel)]="creditOrDebitnumber" name="creditordebitnumber" maxlength="16" minlength="16" placeholder="ENTER YOUR CARD NUMBER" required>
+        <input type="text" class="form-control" [(ngModel)]="nameOnTheCard" name="nameonthecard" placeholder="NAME ON THE CARD" required>
+        <input type="text" class="form-control" [(ngModel)]="expMonth" name="expmonth" placeholder="MM" maxlength="2" minlength="2" id="txtExpMonth" required>
+        <input type="text" class="form-control" [(ngModel)]="expYear" name="expyear" placeholder="YY" maxlength="2" minlength="2" id="txtExpYear" required>
+        <input type="password" class="form-control"  [(ngModel)]="cvv"  name="cvv" placeholder="CVV" maxlength="3" minlength="3"id="txtCVV" required>
         <button id="buttonAllign"  class="button" type="submit" [disabled]="!paymentDetailsThroughCard.form.valid">Pay {{this.isPayAmount}}</button>
       </form>
     </div>

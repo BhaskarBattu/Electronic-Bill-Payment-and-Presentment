@@ -13,8 +13,8 @@
     <li><a *ngIf="this.isloginer" class="nav-link" (click)="customer()" routerLinkActive="active">Customer Management</a></li>
     <li><a *ngIf="this.isloginer" class="nav-link" routerLink="/signup" routerLinkActive="active">Bills Management</a></li>
     <li><a *ngIf="!this.isloginer"class="nav-link" routerLink="/signup" routerLinkActive="active">Bills Payment Mangement</a></li>
-    <li><a  *ngIf="!this.isloginer"class="nav-link" id="logUser"> {{ this.name }}! {{this.phonenumber}}</a></li>
-    <li><a  *ngIf="this.isloginer"class="nav-link" id="logAdmin"> {{ this.name }}! {{this.phonenumber}}</a></li>
+    <li><a  *ngIf="!this.isloginer"class="nav-link" id="logUser"> {{ this.name }}! {{this.phoneNumber}}</a></li>
+    <li><a  *ngIf="this.isloginer"class="nav-link" id="logAdmin"> {{ this.name }}! {{this.phoneNumber}}</a></li>
     &lt;!&ndash;<li><a  class="nav-link" ><img src={{this.url}} width="4%" height="3%"></a></li>&ndash;&gt;
     <li><a class="nav-link" (click)="logout()" routerLinkActive="active">Logout</a></li>
   </ul>

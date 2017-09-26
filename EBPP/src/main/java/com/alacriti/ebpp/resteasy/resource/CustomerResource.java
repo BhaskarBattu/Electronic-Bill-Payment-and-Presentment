@@ -36,7 +36,6 @@ public class CustomerResource {
 		HttpSession session = request.getSession(false);
 			if(session!=null)
 					session.invalidate();
-			//System.out.print(sessionUtility.checkForSession(session)+"gg");
 		return sessionUtility.checkForSession(session);
 	}
 	
@@ -84,14 +83,14 @@ public class CustomerResource {
 	@Produces(MediaType.APPLICATION_JSON)
 	@Consumes(MediaType.APPLICATION_JSON)
 	public Response payCustomerBill(PayDetailsVO payment){
-		log.debug("=========>> getCustomerBills method in CustomerResource class ::");
+		log.debug("=========>> payBillThroughCard method in CustomerResource class ::");
 		boolean result= false;
 		CustomerDelegate customerDelegate=null;
 		try {
 			customerDelegate =new CustomerDelegate();
 			result = customerDelegate.payCustomerBill(payment);
 		} catch (Exception e) {
-			log.error("Exception in getCustomerBills of CustomerResource : "+ e.getMessage(), e);
+			log.error("Exception in payBillThroughCard of CustomerResource : "+ e.getMessage(), e);
 			e.printStackTrace();
 		}
 		return Response.status(200).entity(result).build();

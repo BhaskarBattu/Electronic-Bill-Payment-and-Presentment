@@ -14,9 +14,9 @@ export class AppComponent {
   name: any;
   state: string = '';
   url: any;
-  phonenumber: any;
+  phoneNumber: any;
   isUserLoggedIn: boolean;
-  logoutresponse: any;
+  logoutResponse: any;
   constructor(public af: AngularFireAuth, private logoutService: LogoutService , private router: Router) {
 
     this.af.authState.subscribe(auth => {
@@ -27,7 +27,7 @@ export class AppComponent {
         this.isUserLoggedIn = true;
         this.name = auth.displayName;
         this.url = auth.photoURL;
-        this.phonenumber = auth.phoneNumber;
+        this.phoneNumber = auth.phoneNumber;
       }
     });
 
@@ -42,7 +42,7 @@ export class AppComponent {
             this.af.auth.signOut();
             window.localStorage.removeItem('customerMail');
           }
-         this.logoutresponse = response;
+         this.logoutResponse = response;
         }
       );
   }
